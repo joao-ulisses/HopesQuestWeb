@@ -57,14 +57,14 @@ class Player {
 }
 
 class Platform {
-    constructor() {
+    constructor(positionX, positionY, width, height) {
         this.position = {
-            x: 200,
-            y: 100
+            x: positionX,
+            y: positionY
         }
         
-        this.width = 200
-        this.height = 20
+        this.width = width
+        this.height = height
         this.bookRight = false;
         this.bookLeft = true;
     }
@@ -103,7 +103,11 @@ class Book {
     }
 
     draw() {
-        c.fillStyle = 'green'
+        if (this.type == "left") {
+            c.fillStyle = 'blue'
+        } else {
+            c.fillStyle = 'green'
+        }     
         c.fillRect(this.position.x, this.position.y, this.width, this.height)
     }
 
@@ -127,10 +131,14 @@ function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
     if (estadoAtual == estados.jogando) { 
         if (tempoJogo >= 0) {
-            c.fillText(tempoJogo, 300, 300, 600);
-
-            player.update()
             platform.draw()
+            leftPlatform.draw()
+            rightPlatform.draw()
+
+            c.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+            c.fillText(tempoJogo, 300, 300, 600);
+            player.update()
             book.update()
     
             if (keys.right.pressed) {
@@ -153,10 +161,18 @@ function animate() {
             }
     
             // platform collision
-            if (player.position.y + player.height <= platform.position.y && 
+            if ((player.position.y + player.height <= platform.position.y && 
                 player.position.y + player.height + player.velocity.y >= platform.position.y &&
                 player.position.x + player.width >= platform.position.x &&
-                player.position.x <= platform.position.x + platform.width) {
+                player.position.x <= platform.position.x + platform.width) ||
+                (player.position.y + player.height <= leftPlatform.position.y && 
+                player.position.y + player.height + player.velocity.y >= leftPlatform.position.y &&
+                player.position.x + player.width >= leftPlatform.position.x &&
+                player.position.x <= leftPlatform.position.x + leftPlatform.width) ||
+                (player.position.y + player.height <= rightPlatform.position.y && 
+                player.position.y + player.height + player.velocity.y >= rightPlatform.position.y &&
+                player.position.x + player.width >= rightPlatform.position.x &&
+                player.position.x <= rightPlatform.position.x + rightPlatform.width)) {
                 player.velocity.y = 0
             } 
     
@@ -208,8 +224,13 @@ const keys = {
 }
 var tempoJogo = 240;
 
+var background = document.createElement("img");
+background.src = "../cenario_web.png"
+
 const player = new Player()
-const platform = new Platform()
+const platform = new Platform(183, 393, 229, 44)
+const leftPlatform = new Platform(0, 215, 236, 52)
+const rightPlatform = new Platform(364, 211, 236, 49)
 
 let randomX = generateRandom(20, canvas.width - 20);
 let randomY = generateRandom(20, canvas.height - 20);
