@@ -16,8 +16,8 @@ class Player {
             y: 0
         }
 
-        this.width = 30;
-        this.height = 30;
+        this.width = 45;
+        this.height = 60;
         this.bookCountLeft = 0;
         this.bookCountRight = 0;
         this.allCount = this.bookCountLeft + this.bookCountRight;
@@ -31,15 +31,10 @@ class Player {
         }
 
         this.allCount++;
-
-        console.log(this.allCount);
-        console.log(this.bookCountLeft);
-        console.log(this.bookCountRight);
     }
 
     draw() {
-        c.fillStyle = 'red'
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.drawImage(personagem, player.position.x, player.position.y, player.width, player.height);
     }
 
     update() {
@@ -68,11 +63,6 @@ class Platform {
         this.bookRight = false;
         this.bookLeft = true;
     }
-
-    draw() {
-        c.fillStyle = 'blue'
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
-    }
 }
 
 class Book {
@@ -82,13 +72,13 @@ class Book {
             y: randomY
         }
         this.type = this.generateBook();
-        this.width = 20
-        this.height = 20
+        this.width = 30
+        this.height = 15
     }
 
     generateBook() {
         let rand = generateRandom(0, 2);
-        console.log(rand)
+        
         if (rand == 1) {
             return "left";
         } else {
@@ -103,12 +93,13 @@ class Book {
     }
 
     draw() {
+        let livro;
         if (this.type == "left") {
-            c.fillStyle = 'blue'
+            livro = livroAzul            
         } else {
-            c.fillStyle = 'green'
+            livro = livroVermelho
         }     
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.drawImage(livro, book.position.x, book.position.y, book.width, book.height);
     }
 
     update() {
@@ -131,14 +122,16 @@ function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
     if (estadoAtual == estados.jogando) { 
         if (tempoJogo >= 0) {
-            platform.draw()
-            leftPlatform.draw()
-            rightPlatform.draw()
-
             c.drawImage(background, 0, 0, canvas.width, canvas.height);
+            
+            c.fillStyle = "white";
+            let textoCronometro = "Cronometro: " + tempoJogo;
+            c.fillText(textoCronometro, 214, 35);
 
-            c.fillText(tempoJogo, 300, 300, 600);
-            player.update()
+            let textoPontos = "Livros coletados: " + player.allCount;
+            c.fillText(textoPontos, 214, 55);
+
+            player.update();
             book.update()
     
             if (keys.right.pressed) {
@@ -225,7 +218,17 @@ const keys = {
 var tempoJogo = 240;
 
 var background = document.createElement("img");
-background.src = "../cenario_web.png"
+background.src = "../cenario_webTestUI.png";
+var personagem = document.createElement("img");
+personagem.src = "../hope.png";
+var livroAzul = document.createElement("img");
+livroAzul.src = "../livroAzul.png";
+var livroVermelho = document.createElement("img");
+livroVermelho.src = "../livroVermelho.png";
+var bgSound = new Audio("../Background.mp3");
+bgSound.preload = 'auto';
+bgSound.loop = true;
+bgSound.load();
 
 const player = new Player()
 const platform = new Platform(183, 393, 229, 44)
@@ -239,7 +242,6 @@ const book = new Book(randomX, randomY);
 animate()
 
 addEventListener('keydown', ({ keyCode }) => {
-    console.log(keyCode);
     if (estadoAtual == estados.jogando) {
         switch (keyCode) {
             case 65:
@@ -271,6 +273,7 @@ addEventListener('keydown', ({ keyCode }) => {
             // tecla "Enter"
             case 13:                
                 estadoAtual = estados.jogando;
+                bgSound.play();
                 var cronometro = setInterval(() => {
                     if (estadoAtual == estados.jogando) {
                         tempoJogo--;
@@ -295,6 +298,7 @@ addEventListener('keydown', ({ keyCode }) => {
         }
     } else if (estadoAtual == estados.fimJogo) {
         clearInterval(cronometro);
+        bgSound.pause();
         player.position = {
             x: 100,
             y: 100
@@ -315,6 +319,7 @@ addEventListener('keydown', ({ keyCode }) => {
             // tecla "Enter"
             case 13:
                 estadoAtual = estados.jogando;
+                bgSound.play();
                 break;
             // tecla "m"
             case 77:
