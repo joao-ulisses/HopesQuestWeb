@@ -16,8 +16,8 @@ class Player {
             y: 0
         }
 
-        this.width = 30;
-        this.height = 30;
+        this.width = 45;
+        this.height = 60;
         this.bookCountLeft = 0;
         this.bookCountRight = 0;
         this.allCount = this.bookCountLeft + this.bookCountRight;
@@ -31,15 +31,10 @@ class Player {
         }
 
         this.allCount++;
-
-        console.log(this.allCount);
-        console.log(this.bookCountLeft);
-        console.log(this.bookCountRight);
     }
 
     draw() {
-        c.fillStyle = 'red'
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.drawImage(personagem, player.position.x, player.position.y, player.width, player.height);
     }
 
     update() {
@@ -57,21 +52,16 @@ class Player {
 }
 
 class Platform {
-    constructor() {
+    constructor(positionX, positionY, width, height) {
         this.position = {
-            x: 200,
-            y: 100
+            x: positionX,
+            y: positionY
         }
         
-        this.width = 200
-        this.height = 20
+        this.width = width
+        this.height = height
         this.bookRight = false;
         this.bookLeft = true;
-    }
-
-    draw() {
-        c.fillStyle = 'blue'
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
     }
 }
 
@@ -82,13 +72,13 @@ class Book {
             y: randomY
         }
         this.type = this.generateBook();
-        this.width = 20
-        this.height = 20
+        this.width = 30
+        this.height = 15
     }
 
     generateBook() {
         let rand = generateRandom(0, 2);
-        console.log(rand)
+        
         if (rand == 1) {
             return "left";
         } else {
@@ -103,8 +93,13 @@ class Book {
     }
 
     draw() {
-        c.fillStyle = 'green'
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        let livro;
+        if (this.type == "left") {
+            livro = livroAzul            
+        } else {
+            livro = livroVermelho
+        }     
+        c.drawImage(livro, book.position.x, book.position.y, book.width, book.height);
     }
 
     update() {
@@ -127,10 +122,16 @@ function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
     if (estadoAtual == estados.jogando) { 
         if (tempoJogo >= 0) {
-            c.fillText(tempoJogo, 300, 300, 600);
+            c.drawImage(background, 0, 0, canvas.width, canvas.height);
+            
+            c.fillStyle = "white";
+            let textoCronometro = "Cronometro: " + tempoJogo;
+            c.fillText(textoCronometro, 214, 35);
 
-            player.update()
-            platform.draw()
+            let textoPontos = "Livros coletados: " + player.allCount;
+            c.fillText(textoPontos, 214, 55);
+
+            player.update();
             book.update()
     
             if (keys.right.pressed) {
@@ -153,10 +154,18 @@ function animate() {
             }
     
             // platform collision
-            if (player.position.y + player.height <= platform.position.y && 
+            if ((player.position.y + player.height <= platform.position.y && 
                 player.position.y + player.height + player.velocity.y >= platform.position.y &&
                 player.position.x + player.width >= platform.position.x &&
-                player.position.x <= platform.position.x + platform.width) {
+                player.position.x <= platform.position.x + platform.width) ||
+                (player.position.y + player.height <= leftPlatform.position.y && 
+                player.position.y + player.height + player.velocity.y >= leftPlatform.position.y &&
+                player.position.x + player.width >= leftPlatform.position.x &&
+                player.position.x <= leftPlatform.position.x + leftPlatform.width) ||
+                (player.position.y + player.height <= rightPlatform.position.y && 
+                player.position.y + player.height + player.velocity.y >= rightPlatform.position.y &&
+                player.position.x + player.width >= rightPlatform.position.x &&
+                player.position.x <= rightPlatform.position.x + rightPlatform.width)) {
                 player.velocity.y = 0
             } 
     
@@ -167,6 +176,7 @@ function animate() {
                 ) 
             {
                 if (book.type == player.book) {
+                    pegaSom.play();
                     player.updateCount(book.type);
                     book.mudaLivro();
                 }
@@ -176,15 +186,14 @@ function animate() {
             estadoAtual = estados.fimJogo;
         }
     } else if (estadoAtual == estados.menu) {
-        c.fillText("Jogar - Aperte Enter", 300, 300, 600);
-        c.fillText("Tutorial - Aperte t", 300, 400, 600);
-        c.fillText("Historia - Aperte h", 300, 500, 600);
+        c.drawImage(menu, 0, 0, canvas.width, canvas.height);
     } else if (estadoAtual == estados.tutorial) {
-        c.fillText("Tutorial - Aperte Enter", 300, 300, 600);
+        c.drawImage(tutorial, 0, 0, canvas.width, canvas.height);
     } else if (estadoAtual == estados.historia) {
-        c.fillText("Historia - Aperte Enter", 300, 300, 600);
+        c.drawImage(historia, 0, 0, canvas.width, canvas.height);
     } else if (estadoAtual == estados.fimJogo) {
-        c.fillText("Fim de jogo", 300, 300, 600);
+        c.drawImage(fimJogo, 0, 0, canvas.width, canvas.height);
+        c.fillText(pontoFinal, 305, 295);
     }
 }
 
@@ -206,10 +215,44 @@ const keys = {
         pressed: false
     }
 }
-var tempoJogo = 240;
+var tempoJogo = 10;
+var pontoFinal = 0;
+
+var menu = document.createElement("img");
+menu.src = "Imagens/menu.png";
+var tutorial = document.createElement("img");
+tutorial.src = "Imagens/tutorial.png";
+var historia = document.createElement("img");
+historia.src = "Imagens/historia.png";
+var fimJogo = document.createElement("img");
+fimJogo.src = "Imagens/fimJogo.png";
+var background = document.createElement("img");
+background.src = "Imagens/cenario_web.png";
+var personagem = document.createElement("img");
+personagem.src = "Imagens/hope.png";
+var livroAzul = document.createElement("img");
+livroAzul.src = "Imagens/livroAzul.png";
+var livroVermelho = document.createElement("img");
+livroVermelho.src = "Imagens/livroVermelho.png";
+
+var bgSound = new Audio("Sons/Background.mp3");
+bgSound.preload = 'auto';
+bgSound.loop = true;
+bgSound.volume = 0.2;
+bgSound.load();
+var pulaSom = new Audio("Sons/Pular.mp3");
+pulaSom.preload = 'auto';
+pulaSom.loop = false;
+pulaSom.load();
+var pegaSom = new Audio("Sons/Pegar.mp3");
+pegaSom.preload = 'auto';
+pegaSom.loop = false;
+pegaSom.load();
 
 const player = new Player()
-const platform = new Platform()
+const platform = new Platform(183, 393, 229, 44)
+const leftPlatform = new Platform(0, 215, 236, 52)
+const rightPlatform = new Platform(364, 211, 236, 49)
 
 let randomX = generateRandom(20, canvas.width - 20);
 let randomY = generateRandom(20, canvas.height - 20);
@@ -218,7 +261,6 @@ const book = new Book(randomX, randomY);
 animate()
 
 addEventListener('keydown', ({ keyCode }) => {
-    console.log(keyCode);
     if (estadoAtual == estados.jogando) {
         switch (keyCode) {
             case 65:
@@ -235,6 +277,7 @@ addEventListener('keydown', ({ keyCode }) => {
             case 87:
             case 32: 
                 player.velocity.y -= 10
+                pulaSom.play()
                 break
             
             case 81:
@@ -250,6 +293,7 @@ addEventListener('keydown', ({ keyCode }) => {
             // tecla "Enter"
             case 13:                
                 estadoAtual = estados.jogando;
+                bgSound.play();
                 var cronometro = setInterval(() => {
                     if (estadoAtual == estados.jogando) {
                         tempoJogo--;
@@ -274,6 +318,7 @@ addEventListener('keydown', ({ keyCode }) => {
         }
     } else if (estadoAtual == estados.fimJogo) {
         clearInterval(cronometro);
+        bgSound.pause();
         player.position = {
             x: 100,
             y: 100
@@ -283,17 +328,21 @@ addEventListener('keydown', ({ keyCode }) => {
             y: 0
         }
 
-        player.width = 30;
-        player.height = 30;
+        keys.left.pressed = false;
+        keys.right.pressed = false;
+        
+        pontoFinal = player.allCount;
+
         player.bookCountLeft = 0;
         player.bookCountRight = 0;
-        player.allCount = this.bookCountLeft + this.bookCountRight;
+        player.allCount = 0;
         player.bookType = "";
 
         switch (keyCode) {
             // tecla "Enter"
             case 13:
                 estadoAtual = estados.jogando;
+                bgSound.play();
                 break;
             // tecla "m"
             case 77:
