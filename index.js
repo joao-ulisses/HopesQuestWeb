@@ -1,8 +1,9 @@
-const canvas = document.querySelector('canvas')
-const c = canvas.getContext('2d')
+const canvas = document.querySelector('canvas');
+const c = canvas.getContext('2d');
+c.font = "60px Arial";
 
-canvas.width = 600
-canvas.height = 600
+canvas.width = 600;
+canvas.height = 600;
 
 
 class Player {
@@ -179,6 +180,7 @@ function animate() {
                     pegaSom.play();
                     player.updateCount(book.type);
                     book.mudaLivro();
+                    pontoFinal = player.allCount;
                 }
             }
         } else {
@@ -192,8 +194,13 @@ function animate() {
     } else if (estadoAtual == estados.historia) {
         c.drawImage(historia, 0, 0, canvas.width, canvas.height);
     } else if (estadoAtual == estados.fimJogo) {
+        if (pontoFinal >= record) {
+            record = pontoFinal;
+            localStorage.setItem("record", record);
+        }
         c.drawImage(fimJogo, 0, 0, canvas.width, canvas.height);
         c.fillText(pontoFinal, 305, 295);
+        c.fillText(record, 305, 340);
     }
 }
 
@@ -215,8 +222,12 @@ const keys = {
         pressed: false
     }
 }
-var tempoJogo = 10;
+var tempoJogo = 240;
 var pontoFinal = 0;
+var record = localStorage.getItem("record");
+if (record == null) {
+    record = 0   
+}
 
 var menu = document.createElement("img");
 menu.src = "Imagens/menu.png";
@@ -331,8 +342,6 @@ addEventListener('keydown', ({ keyCode }) => {
         keys.left.pressed = false;
         keys.right.pressed = false;
         
-        pontoFinal = player.allCount;
-
         player.bookCountLeft = 0;
         player.bookCountRight = 0;
         player.allCount = 0;
