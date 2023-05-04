@@ -186,15 +186,14 @@ function animate() {
             estadoAtual = estados.fimJogo;
         }
     } else if (estadoAtual == estados.menu) {
-        c.fillText("Jogar - Aperte Enter", 300, 300, 600);
-        c.fillText("Tutorial - Aperte t", 300, 400, 600);
-        c.fillText("Historia - Aperte h", 300, 500, 600);
+        c.drawImage(menu, 0, 0, canvas.width, canvas.height);
     } else if (estadoAtual == estados.tutorial) {
-        c.fillText("Tutorial - Aperte Enter", 300, 300, 600);
+        c.drawImage(tutorial, 0, 0, canvas.width, canvas.height);
     } else if (estadoAtual == estados.historia) {
-        c.fillText("Historia - Aperte Enter", 300, 300, 600);
+        c.drawImage(historia, 0, 0, canvas.width, canvas.height);
     } else if (estadoAtual == estados.fimJogo) {
-        c.fillText("Fim de jogo", 300, 300, 600);
+        c.drawImage(fimJogo, 0, 0, canvas.width, canvas.height);
+        c.fillText(pontoFinal, 305, 295);
     }
 }
 
@@ -216,8 +215,17 @@ const keys = {
         pressed: false
     }
 }
-var tempoJogo = 240;
+var tempoJogo = 10;
+var pontoFinal = 0;
 
+var menu = document.createElement("img");
+menu.src = "../menu.png";
+var tutorial = document.createElement("img");
+tutorial.src = "../tutorial.png";
+var historia = document.createElement("img");
+historia.src = "../historia.png";
+var fimJogo = document.createElement("img");
+fimJogo.src = "../fimJogo.png";
 var background = document.createElement("img");
 background.src = "../cenario_webTestUI.png";
 var personagem = document.createElement("img");
@@ -320,11 +328,14 @@ addEventListener('keydown', ({ keyCode }) => {
             y: 0
         }
 
-        player.width = 30;
-        player.height = 30;
+        keys.left.pressed = false;
+        keys.right.pressed = false;
+        
+        pontoFinal = player.allCount;
+
         player.bookCountLeft = 0;
         player.bookCountRight = 0;
-        player.allCount = this.bookCountLeft + this.bookCountRight;
+        player.allCount = 0;
         player.bookType = "";
 
         switch (keyCode) {
