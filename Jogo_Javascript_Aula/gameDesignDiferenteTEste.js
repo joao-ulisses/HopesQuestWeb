@@ -176,6 +176,7 @@ function animate() {
                 ) 
             {
                 if (book.type == player.book) {
+                    pegaSom.play();
                     player.updateCount(book.type);
                     book.mudaLivro();
                 }
@@ -225,10 +226,20 @@ var livroAzul = document.createElement("img");
 livroAzul.src = "../livroAzul.png";
 var livroVermelho = document.createElement("img");
 livroVermelho.src = "../livroVermelho.png";
+
 var bgSound = new Audio("../Background.mp3");
 bgSound.preload = 'auto';
 bgSound.loop = true;
+bgSound.volume = 0.2;
 bgSound.load();
+var pulaSom = new Audio("../Pular.mp3");
+pulaSom.preload = 'auto';
+pulaSom.loop = false;
+pulaSom.load();
+var pegaSom = new Audio("../Pegar.mp3");
+pegaSom.preload = 'auto';
+pegaSom.loop = false;
+pegaSom.load();
 
 const player = new Player()
 const platform = new Platform(183, 393, 229, 44)
@@ -258,6 +269,7 @@ addEventListener('keydown', ({ keyCode }) => {
             case 87:
             case 32: 
                 player.velocity.y -= 10
+                pulaSom.play()
                 break
             
             case 81:
