@@ -108,6 +108,29 @@ class Book {
     }
 }
 
+function paraJogo() {
+    clearInterval(cronometro);
+    bgSound.pause();
+    player.position = {
+        x: 100,
+        y: 100
+    }
+    player.velocity = {
+        x: 0,
+        y: 0
+    }
+
+    keys.left.pressed = false;
+    keys.right.pressed = false;
+        
+    player.bookCountLeft = 0;
+    player.bookCountRight = 0;
+    player.allCount = 0;
+    player.bookType = "";
+
+    book.mudaLivro();
+}
+
 function generateRandom(min, max) {
     let difference = max - min;
     let rand = Math.random();
@@ -184,7 +207,7 @@ function animate() {
                 }
             }
         } else {
-            tempoJogo = 240;
+            tempoJogo = 60;
             estadoAtual = estados.fimJogo;
         }
     } else if (estadoAtual == estados.menu) {
@@ -193,6 +216,8 @@ function animate() {
         c.drawImage(tutorial, 0, 0, canvas.width, canvas.height);
     } else if (estadoAtual == estados.historia) {
         c.drawImage(historia, 0, 0, canvas.width, canvas.height);
+    } else if (estadoAtual == estados.creditos) {
+        c.drawImage(creditos, 0, 0, canvas.width, canvas.height);
     } else if (estadoAtual == estados.fimJogo) {
         if (pontoFinal >= record) {
             record = pontoFinal;
@@ -209,7 +234,8 @@ var estados = { //tipo de status do jogo
 	jogando: 1,
     tutorial: 2,
     historia: 3,
-    fimJogo: 4
+    creditos: 4,
+    fimJogo: 5
 },
 estadoAtual = 0;
 
@@ -222,7 +248,8 @@ const keys = {
         pressed: false
     }
 }
-var tempoJogo = 240;
+var cronometro;
+var tempoJogo = 60;
 var pontoFinal = 0;
 var record = localStorage.getItem("record");
 if (record == null) {
@@ -235,12 +262,14 @@ var tutorial = document.createElement("img");
 tutorial.src = "Imagens/tutorial.png";
 var historia = document.createElement("img");
 historia.src = "Imagens/historia.png";
+var creditos = document.createElement("img");
+creditos.src = "Imagens/Creditos.jpg";
 var fimJogo = document.createElement("img");
 fimJogo.src = "Imagens/fimJogo.png";
 var background = document.createElement("img");
 background.src = "Imagens/cenario_web.png";
 var personagem = document.createElement("img");
-personagem.src = "Imagens/hope.png";
+personagem.src = "Imagens/hopes.png";
 var livroAzul = document.createElement("img");
 livroAzul.src = "Imagens/livroAzul.png";
 var livroVermelho = document.createElement("img");
@@ -274,29 +303,37 @@ animate()
 addEventListener('keydown', ({ keyCode }) => {
     if (estadoAtual == estados.jogando) {
         switch (keyCode) {
+            // Tecla "A"
             case 65:
                 keys.left.pressed = true;
                 break
     
-            case 83:
-                break
-    
+            // Tecla "D"
             case 68:
                 keys.right.pressed = true;
                 break
     
+            // Tecla "W" ou "SPACE"
             case 87:
             case 32: 
                 player.velocity.y -= 10
                 pulaSom.play()
                 break
             
+            // Tecla "Q"
             case 81:
                 player.book = "left";
                 break;
     
+            // Tecla "E"
             case 69:
                 player.book = "right";
+                break;
+
+            // Tecla "ESC"
+            case 27:
+                estadoAtual = estados.menu;
+                paraJogo();
                 break;
         }
     } else if (estadoAtual == estados.menu) {
@@ -305,7 +342,7 @@ addEventListener('keydown', ({ keyCode }) => {
             case 13:                
                 estadoAtual = estados.jogando;
                 bgSound.play();
-                var cronometro = setInterval(() => {
+                cronometro = setInterval(() => {
                     if (estadoAtual == estados.jogando) {
                         tempoJogo--;
                     }                    
@@ -319,8 +356,12 @@ addEventListener('keydown', ({ keyCode }) => {
             case 84:
                 estadoAtual = estados.tutorial;
                 break;
+            // tecla "c"
+            case 67:
+                estadoAtual = estados.creditos;
+                break;
         }
-    } else if (estadoAtual == estados.historia || estadoAtual == estados.tutorial) {
+    } else if (estadoAtual == estados.historia || estadoAtual == estados.tutorial || estadoAtual == estados.creditos) {
         switch (keyCode) {
             // tecla "Enter"
             case 13:
@@ -328,24 +369,7 @@ addEventListener('keydown', ({ keyCode }) => {
                 break;
         }
     } else if (estadoAtual == estados.fimJogo) {
-        clearInterval(cronometro);
-        bgSound.pause();
-        player.position = {
-            x: 100,
-            y: 100
-        }
-        player.velocity = {
-            x: 0,
-            y: 0
-        }
-
-        keys.left.pressed = false;
-        keys.right.pressed = false;
-        
-        player.bookCountLeft = 0;
-        player.bookCountRight = 0;
-        player.allCount = 0;
-        player.bookType = "";
+        paraJogo();
 
         switch (keyCode) {
             // tecla "Enter"
