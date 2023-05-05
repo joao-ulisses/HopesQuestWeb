@@ -108,6 +108,16 @@ class Book {
     }
 }
 
+function comecaJogo() {                   
+    estadoAtual = estados.jogando;
+    bgSound.play(); 
+    cronometro = setInterval(() => {
+        if (estadoAtual == estados.jogando) {
+            tempoJogo--;
+        }                    
+    }, 1000);
+}
+
 function paraJogo() {
     clearInterval(cronometro);
     bgSound.pause();
@@ -339,14 +349,8 @@ addEventListener('keydown', ({ keyCode }) => {
     } else if (estadoAtual == estados.menu) {
         switch (keyCode) {
             // tecla "Enter"
-            case 13:                
-                estadoAtual = estados.jogando;
-                bgSound.play();
-                cronometro = setInterval(() => {
-                    if (estadoAtual == estados.jogando) {
-                        tempoJogo--;
-                    }                    
-                }, 1000);
+            case 13:
+                comecaJogo();
                 break;
             // tecla "h"
             case 72:
@@ -374,8 +378,7 @@ addEventListener('keydown', ({ keyCode }) => {
         switch (keyCode) {
             // tecla "Enter"
             case 13:
-                estadoAtual = estados.jogando;
-                bgSound.play();
+                comecaJogo();
                 break;
             // tecla "m"
             case 77:
